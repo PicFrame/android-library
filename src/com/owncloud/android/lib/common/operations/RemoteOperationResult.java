@@ -113,6 +113,7 @@ public class RemoteOperationResult implements Serializable {
     private int mHttpCode = -1;
     private Exception mException = null;
     private ResultCode mCode = ResultCode.UNKNOWN_ERROR;
+    private String mFilename;
     private String mRedirectedLocation;
     private String mAuthenticate;
     private String mLastPermanentLocation = null;
@@ -168,6 +169,9 @@ public class RemoteOperationResult implements Serializable {
             Header current;
             for (int i=0; i<headers.length; i++) {
                 current = headers[i];
+                if ("filename".equals(current.getName().toLowerCase())) {
+                    mFilename = current.getValue();
+                }
                 if ("location".equals(current.getName().toLowerCase())) {
                     mRedirectedLocation = current.getValue();
                     continue;
@@ -434,6 +438,10 @@ public class RemoteOperationResult implements Serializable {
 
     public String getAuthenticateHeader() {
     	return mAuthenticate;
+    }
+
+    public String getFilename() {
+        return mFilename == null ? null : mFilename;
     }
 
     public String getLastPermanentLocation() {

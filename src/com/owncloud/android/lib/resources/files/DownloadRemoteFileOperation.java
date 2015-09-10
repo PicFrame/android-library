@@ -28,6 +28,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -82,8 +84,18 @@ public class DownloadRemoteFileOperation extends RemoteOperation {
         try {
         	tmpFile.getParentFile().mkdirs();
         	int status = downloadFile(client, tmpFile);
-        	result = new RemoteOperationResult(isSuccess(status), status,
-                    (mGet != null ? mGet.getResponseHeaders() : null));
+            Header[] headerArray = null;
+            if (mGet != null) {
+                headerArray = mGet.getResponseHeaders();
+                ArrayList<Header> headerList = new ArrayList<Header>();
+                Collections.addAll(headerList, headerArray);
+                headerList.add(new Header("Filename", tmpFile.toString()));
+                headerArray = new Header[headerList.size()];
+                headerList.toArray(headerArray);
+            } else {
+                headerArray = null;
+            }
+            result = new RemoteOperationResult(isSuccess(status), status, headerArray);
         	Log_OC.i(TAG, "Download of " + mRemotePath + " to " + getTmpPath() + ": " +
                     result.getLogMessage());
 
